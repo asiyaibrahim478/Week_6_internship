@@ -8,6 +8,7 @@ namespace LibraryAPI.Models
         public string Category { get; set; } = string.Empty;
         public int? PublishedYear { get; set; }
         public string? ISBN { get; set; }
+        public bool IsAvailable { get; set; } = true;
 
         // Optional Relational Foreign Key navigation
         public int? AuthorId { get; set; }
