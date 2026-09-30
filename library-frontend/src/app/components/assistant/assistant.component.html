@@ -1,0 +1,92 @@
+<div class="assistant-container">
+  <!-- Header -->
+  <header class="assistant-header">
+    <div class="header-left">
+      <div class="bot-avatar">🤖</div>
+      <div>
+        <h2>Library Knowledge Assistant</h2>
+        <span class="status-indicator">
+          <span class="pulse-dot"></span> Live RAG & Tool Calling (.NET + LangChain)
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="session-badge" title="Session ID for conversation memory">
+        🔑 Session: {{ sessionId().substring(0, 14) }}...
+      </span>
+      <button class="btn-reset" (click)="resetChat()" title="Reset session memory">
+        🔄 New Conversation
+      </button>
+    </div>
+  </header>
+
+  <!-- Error / Circuit Breaker Banner -->
+  @if (errorMessage()) {
+    <div class="circuit-breaker-banner">
+      <span class="warning-icon">⚠️</span>
+      <div class="banner-text">
+        <strong>Service Notice:</strong> {{ errorMessage() }}
+      </div>
+    </div>
+  }
+
+  <!-- Messages Scroll Area -->
+  <div class="messages-area" #scrollContainer>
+    @for (msg of messages(); track msg.id) {
+      <div class="message-row" [class.user-row]="msg.sender === 'user'" [class.bot-row]="msg.sender === 'assistant'">
+        <div class="avatar-icon">
+          {{ msg.sender === 'user' ? '👤' : '📚' }}
+        </div>
+        <div class="message-bubble" [class.streaming-active]="msg.isStreaming">
+          <div class="message-sender">
+            {{ msg.sender === 'user' ? 'You' : 'Library AI' }}
+          </div>
+          <div class="message-text">
+            {{ msg.text }}
+            @if (msg.isStreaming) {
+              <span class="typing-cursor">▌</span>
+            }
+          </div>
+
+          <!-- Source Citations -->
+          @if (msg.sources && msg.sources.length > 0) {
+            <div class="sources-container">
+              <span class="sources-label">Sources:</span>
+              @for (source of msg.sources; track source) {
+                <span class="source-chip">📖 {{ source }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Prompt Suggestions -->
+  <div class="suggestions-row">
+    @for (q of suggestedQuestions; track q) {
+      <button class="suggestion-chip" (click)="selectSuggestion(q)" [disabled]="isLoading()">
+        💡 {{ q }}
+      </button>
+    }
+  </div>
+
+  <!-- Input Bar -->
+  <form class="input-form" (ngSubmit)="sendMessage()">
+    <input
+      type="text"
+      placeholder="Ask about books, clean code, replication, or live borrowing availability..."
+      [(ngModel)]="userInput"
+      name="chatInput"
+      [disabled]="isLoading()"
+      autocomplete="off"
+    />
+    <button type="submit" class="btn-send" [disabled]="isLoading() || !userInput().trim()">
+      @if (isLoading()) {
+        <span class="spinner"></span>
+      } @else {
+        <span>Send 🚀</span>
+      }
+    </button>
+  </form>
+</div>
