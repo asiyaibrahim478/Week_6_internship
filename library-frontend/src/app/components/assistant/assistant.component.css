@@ -1,0 +1,285 @@
+.assistant-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  background: #111827;
+  color: #f3f4f6;
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  height: 780px;
+  border: 1px solid #374151;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Header */
+.assistant-header {
+  padding: 1.25rem 1.5rem;
+  background: #1f2937;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bot-avatar {
+  font-size: 2rem;
+  background: #374151;
+  padding: 0.5rem;
+  border-radius: 12px;
+}
+
+.assistant-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #60a5fa;
+}
+
+.status-indicator {
+  font-size: 0.82rem;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.session-badge {
+  font-size: 0.78rem;
+  background: #374151;
+  color: #d1d5db;
+  padding: 0.35rem 0.7rem;
+  border-radius: 20px;
+}
+
+.btn-reset {
+  background: #4b5563;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset:hover {
+  background: #6b7280;
+}
+
+/* Circuit Breaker Banner */
+.circuit-breaker-banner {
+  background: #7f1d1d;
+  color: #fecaca;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #991b1b;
+}
+
+/* Messages Scroll Area */
+.messages-area {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.message-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  max-width: 85%;
+}
+
+.user-row {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.bot-row {
+  align-self: flex-start;
+}
+
+.avatar-icon {
+  font-size: 1.4rem;
+  background: #1f2937;
+  padding: 0.35rem;
+  border-radius: 50%;
+}
+
+.message-bubble {
+  padding: 0.9rem 1.15rem;
+  border-radius: 14px;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.user-row .message-bubble {
+  background: #2563eb;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.bot-row .message-bubble {
+  background: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+  border-bottom-left-radius: 4px;
+}
+
+.message-sender {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  opacity: 0.8;
+}
+
+.typing-cursor {
+  display: inline-block;
+  color: #60a5fa;
+  animation: blink 0.8s infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Sources */
+.sources-container {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #374151;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sources-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.source-chip {
+  font-size: 0.75rem;
+  background: #374151;
+  color: #93c5fd;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* Suggestions */
+.suggestions-row {
+  padding: 0.6rem 1.5rem;
+  background: #111827;
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  border-top: 1px solid #1f2937;
+}
+
+.suggestion-chip {
+  background: #1f2937;
+  color: #9ca3af;
+  border: 1px solid #374151;
+  padding: 0.35rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.suggestion-chip:hover {
+  background: #374151;
+  color: #60a5fa;
+  border-color: #60a5fa;
+}
+
+/* Input Form */
+.input-form {
+  padding: 1rem 1.5rem;
+  background: #1f2937;
+  border-top: 1px solid #374151;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.input-form input {
+  flex: 1;
+  background: #111827;
+  border: 1px solid #4b5563;
+  color: #f3f4f6;
+  padding: 0.8rem 1.1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-form input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.btn-send {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

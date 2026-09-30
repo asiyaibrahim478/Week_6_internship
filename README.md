@@ -1,48 +1,75 @@
-# 📚 Library Management System & AI Service (Week 5 Milestone)
+# 📚 Library Management System & AI Service (Week 6 Milestone)
 
 **Author / Intern:** Asiya  
-**Repository:** [`asiyaibrahim478/week4_internship`](https://github.com/asiyaibrahim478/week4_internship.git)  
-**Milestone Version:** `v0.5-week5`
+**Repository:** [`asiyaibrahim478/Week_5_internship`](https://github.com/asiyaibrahim478/Week_5_internship.git)  
+**Milestone Version:** `v0.6-week6`
 
-[![Repository: week4_internship](https://img.shields.io/badge/Repo-asiyaibrahim478%2Fweek4__internship-blue)](https://github.com/asiyaibrahim478/week4_internship)
 [![Framework: .NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Frontend: Angular](https://img.shields.io/badge/Frontend-Angular-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
-[![AI Backend: FastAPI & RAG](https://img.shields.io/badge/AI_Backend-FastAPI_%26_RAG-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Vector Database: ChromaDB](https://img.shields.io/badge/Vector_DB-ChromaDB-FFA000?logo=chroma&logoColor=white)](https://docs.trychroma.com/)
+[![AI Backend: FastAPI & LangChain](https://img.shields.io/badge/AI_Backend-FastAPI_%26_LangChain-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Streaming: Server--Sent_Events](https://img.shields.io/badge/Streaming-SSE_(Live)-FF5722?logo=fastapi&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
+[![Resilience: Polly](https://img.shields.io/badge/Resilience-Retry_%26_Circuit_Breaker-4CAF50)](https://github.com/App-vNext/Polly)
 [![Database: SQL Server & EF Core](https://img.shields.io/badge/Database-SQL_Server_%26_EF_Core-CC292B?logo=microsoftsqlserver&logoColor=white)](https://learn.microsoft.com/en-us/ef/core/)
 
 ---
 
-## 🌟 Overview & Week 5 Objectives (Embeddings & RAG Fundamentals)
+## 🌟 Overview & Week 6 Objectives (LangChain, Tools, Resilience & Streaming)
 
-Week 5 introduces **Retrieval-Augmented Generation (RAG)**, transforming the AI track from general chat into a grounded knowledge assistant backed by the real library catalog:
-1. **Part A (Embeddings Fundamentals):** Dense vector generation (`text-embedding-3-small`), geometric cosine similarity calculation, and semantic distance verification.
-2. **Part B (Vector Databases & ChromaDB):** Standing up a local Chroma vector database, indexing document chunks with metadata, performing Approximate Nearest Neighbor (ANN) search, and metadata filtering.
-3. **Part C (Manual 8-Stage RAG Pipeline):** Building the full manual pipeline: Ingestion $\rightarrow$ Chunking (fixed-size + overlap) $\rightarrow$ Embedding $\rightarrow$ Vector Storage $\rightarrow$ Retrieval $\rightarrow$ Grounded Prompt Assembly $\rightarrow$ LLM Synthesis $\rightarrow$ Source Attribution.
-4. **Part D (RAG Quality & Hallucination Reduction):** Grounding constraints (*"If not in context, say I don't have that information"*), evaluation benchmark across 5 questions, diagnosing retrieval vs. generation failures, and chunk-size tuning.
-5. **Part E & Project (FastAPI `/ask` Endpoint & Library Assistant):** Fetching real catalog data from .NET API (`GET /api/books`), embedding chunks into persistent Chroma collection, and exposing `POST /ask` with grounded Q&A and verified source citations.
-6. **Part F (Git Safe Revert):** Performing `git revert` to safely undo commits on protected branches without rewriting public history.
+Week 6 transitions from manual learning exercises to **production-shaped full-stack engineering**, establishing a resilient, streaming, multi-turn AI assistant across all three tiers:
+1. **Part A (LangChain Fundamentals & LCEL):** Rebuilding RAG pipelines with composable Runnables (`|`), `RunnablePassthrough`, and `RunnableLambda` input guards.
+2. **Part B (Advanced Retrieval & Splitting):** Hierarchical `RecursiveCharacterTextSplitter` and `MultiQueryRetriever` query expansion.
+3. **Part C (Structured Output & Memory):** `with_structured_output` (Pydantic schema binding) and session-scoped memory (`RunnableWithMessageHistory`) for multi-turn pronoun resolution.
+4. **Part D (Tool Calling):** Equipping the model with `@tool check_book_availability` to query live .NET database availability (`/api/books/{id}/availability`).
+5. **Part E (Resilient .NET $\rightarrow$ AI Integration):** Typed `AiServiceClient` with exponential backoff retries, timeout, circuit breaker (`BrokenCircuitException`), and graceful degradation (HTTP 503).
+6. **Part F (Tri-Layer End-to-End Streaming):** Real-time Server-Sent Events (SSE) token streaming from FastAPI through the .NET proxy with `Response.Body.FlushAsync()` to the Angular `ReadableStream` Chat UI.
+7. **Part G (Git Interactive Rebase):** History cleanup via `git rebase -i` and safe pushing with `--force-with-lease`.
 
 ---
 
-## 🔄 Week 5 RAG Data Flow Architecture
+## 🔄 End-to-End Streaming Architecture & Data Flow
 
 ```mermaid
-flowchart LR
-    DB[(SQL Server\nDatabase)] -->|1. Seed Data| DotNetAPI[".NET 8 Web API\nGET /api/books"]
-    DotNetAPI -->|2. Fetch Catalog| CorpusScript["Python Corpus Script\n(fetch_corpus.py)"]
-    CorpusScript -->|3. chunk_text & embed| VectorStore["ChromaDB\n(library_catalog_rag)"]
-    
-    UserReq["User / Client\nQuery"] -->|4. POST /ask| FastAPIServer["FastAPI Microservice\n(/ask Endpoint)"]
-    FastAPIServer -->|5. ANN Query| VectorStore
-    VectorStore -->|6. Top-k Chunks + Meta| FastAPIServer
-    FastAPIServer -->|7. Grounded Prompt| LLM["LLM (Claude / GPT)\n(Grounded Generation)"]
-    LLM -->|8. Grounded Answer| FastAPIServer
-    FastAPIServer -->|9. JSON Response| ClientResp["{ answer, sources: [...] }"]
+flowchart TD
+    subgraph Client["Frontend SPA (Angular 18)"]
+        ChatUI["Chat Assistant Component\n(Token-by-Token Typing Effect)"]
+        ChatSvc["ChatService (Native fetch + ReadableStream)"]
+    end
+
+    subgraph BackendAPI[".NET 8 Web API (:5000)"]
+        AuthMiddleware["JWT Auth Middleware"]
+        AsstCtrl["AssistantController (/api/assistant/ask/stream)"]
+        ResilientHandler["Resilient Client (Retry & Circuit Breaker)"]
+        FlushProxy["StreamReader & Response.Body.FlushAsync()"]
+    end
+
+    subgraph AIService["Python FastAPI AI Service (:8000)"]
+        FastAPIStream["Streaming Endpoint (/ask/stream)"]
+        LCELChain["LangChain LCEL RAG Pipeline"]
+        MemStore["Session Memory (ChatMessageHistory)"]
+        AvailTool["@tool check_book_availability"]
+    end
+
+    subgraph ExternalLLM["LLM Provider (Claude / GPT-4o-mini)"]
+        Inference["Grounded Generation & Token Stream"]
+    end
+
+    ChatUI -->|1. User Prompt (Session Keyed)| ChatSvc
+    ChatSvc -->|2. POST /api/assistant/ask/stream + Bearer JWT| AuthMiddleware
+    AuthMiddleware --> AsstCtrl
+    AsstCtrl --> ResilientHandler
+    ResilientHandler -->|3. Forward Stream Request| FastAPIStream
+    FastAPIStream --> LCELChain
+    LCELChain <--> MemStore
+    LCELChain <--> AvailTool
+    LCELChain -->|4. Prompt & Tool Calls| Inference
+    Inference -->|5. Token Stream (data: text\n\n)| FastAPIStream
+    FastAPIStream -->|6. SSE Chunks| FlushProxy
+    FlushProxy -->|7. Live Flushed SSE Stream| ChatSvc
+    ChatSvc -->|8. Real-time onChunk Callback| ChatUI
 ```
 
-> [!NOTE]
-> The AI service reading from the .NET API's public GET endpoint is a one-way connection used only to build the RAG corpus. The complete three-way orchestration (**Angular $\rightarrow$ .NET API $\rightarrow$ AI Service**) will be integrated in **Week 6** with LangChain.
+> [!WARNING]
+> **Known Architecture Limitation:** The session store in `ai-service` currently uses an in-memory dictionary (`dict[str, ChatMessageHistory]`). In a multi-instance production environment, this should be backed by a distributed persistent cache such as **Redis** (`RedisChatMessageHistory`).
 
 ---
 

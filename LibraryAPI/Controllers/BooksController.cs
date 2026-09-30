@@ -45,6 +45,21 @@ namespace LibraryAPI.Controllers
         }
 
         /// <summary>
+        /// Week 6: Public endpoint for AI Tool Calling to check live book availability
+        /// </summary>
+        [HttpGet("{id}/availability")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetBookAvailability(int id)
+        {
+            var book = await _bookService.GetBookByIdAsync(id);
+            if (book == null)
+            {
+                return NotFound(new { bookId = id, isAvailable = false, message = $"Book with ID {id} was not found." });
+            }
+            return Ok(new { bookId = id, title = book.Title, isAvailable = book.IsAvailable });
+        }
+
+        /// <summary>
         /// Protected endpoint: Requires valid JWT (any authenticated user)
         /// </summary>
         [HttpPost]

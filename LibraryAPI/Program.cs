@@ -86,6 +86,16 @@ else
 }
 
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddTransient<ResilientPolicyDelegatingHandler>();
+
+// Configure resilient AI Service Client with Retry & Circuit Breaker policies (Week 6)
+builder.Services.AddHttpClient<IAiServiceClient, AiServiceClient>(client =>
+{
+    var aiBaseUrl = builder.Configuration["AiService:BaseUrl"] ?? "http://127.0.0.1:8000";
+    client.BaseAddress = new Uri(aiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.AddHttpMessageHandler<ResilientPolicyDelegatingHandler>();
 
 // 4. Configure JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "SuperSecretLibraryKeyForWeek4InternshipJWTTokenValidation2026!";
